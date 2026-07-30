@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/bakeryos-project/bakeryos-iso-builder/helpers"
@@ -20,7 +22,6 @@ func SyncTestingRepo() error {
 
 	return err
 }
-
 func BuildTestingRepoDB() error {
 	pattern := filepath.Join(helpers.TestingRepoDir, "*.pkg.tar.zst")
 	pkgFiles, err := filepath.Glob(pattern)
@@ -29,8 +30,19 @@ func BuildTestingRepoDB() error {
 	}
 
 	if len(pkgFiles) > 0 {
-		command := append([]string{"repo-add", helpers.TestingRepoDBFile}, pkgFiles...)
-		helpers.RunCommandAndStream(command, "", "")
+		dbTempFile := helpers.TestingRepoDBFile + ".tar.zst"
+		finalDBFile := helpers.TestingRepoDBFile
+
+		command := append([]string{"repo-add", dbTempFile}, pkgFiles...)
+		exitCode := helpers.RunCommandAndStream(command, "", "")
+		if exitCode != 0 {
+			return fmt.Errorf("repo-add failed with exit code: %d", exitCode)
+		}
+
+		err = os.Rename(dbTempFile, finalDBFile)
+		if err != nil {
+			return err
+		}
 	} else {
 		logger.Info("No packages found. Skipped!")
 	}

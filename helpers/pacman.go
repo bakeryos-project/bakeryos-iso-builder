@@ -19,7 +19,7 @@ func BuildPacmanConfig() error {
 			return err
 		}
 
-		_, err = testingSec.NewKey("SigLevel", "PackageRequired")
+		_, err = testingSec.NewKey("SigLevel", "Never")
 		if err != nil {
 			return err
 		}
