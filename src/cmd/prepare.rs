@@ -6,7 +6,7 @@ use crate::{
     utils::paths::{get_current_working_dir, init_file_system},
 };
 use argh::FromArgs;
-use log::{info, warn};
+use log::info;
 
 /// Prepare environment
 #[derive(FromArgs, PartialEq, Debug)]
