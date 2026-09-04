@@ -13,18 +13,24 @@ where
         cmd.arg(a);
     }
 
-    let status = cmd
-        .stdin(Stdio::piped())
+    let output = cmd
+        .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .current_dir(dir)
-        .status()
+        .output()
         .map_err(|e| e.to_string())?;
 
-    if !status.success() {
+    if !output.status.success() {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+
         return Err(format!(
-            "Command failed with exit code: {:?}",
-            status.code()
+            "Command '{}' failed with exit code: {:?}\n--- STDOUT ---\n{}\n--- STDERR ---\n{}",
+            program,
+            output.status.code(),
+            stdout,
+            stderr
         ));
     }
 

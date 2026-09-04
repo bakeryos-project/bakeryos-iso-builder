@@ -13,7 +13,7 @@ pub fn sync_testing_repo() -> Result<(), String> {
 pub fn build_testing_repo() -> Result<(), String> {
     let all_paths = get_all_paths()?;
 
-    let db_temp_file = all_paths.testing_repo_db_file.join(".tar.zst");
+    let db_temp_file = all_paths.testing_repo_dir.join("testing.db.tar.zst");
     let pattern_buf = all_paths.testing_repo_dir.join("*.pkg.tar.zst");
 
     let pattern_str = pattern_buf.to_string_lossy();

@@ -35,9 +35,9 @@ pub fn run_mk_iso() -> Result<(), String> {
         .to_str()
         .ok_or("Invalid path for temp file")?;
     let config_file_str = all_paths
-        .pacman_config_file
+        .build_pacman_config_file
         .to_str()
-        .ok_or("Invalid path")?;
+        .ok_or("Invaild path")?;
     let work_dir_str = all_paths.work_dir.to_str().ok_or("Invalid path")?;
     let out_dir_str = all_paths.out_dir.to_str().ok_or("Invalid path")?;
 

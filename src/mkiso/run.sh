@@ -408,6 +408,27 @@ _make_customize_airootfs() {
         _msg_info "Done!"
     fi
 
+    if [[ -d "${profile}/flatpak" ]]; then
+        _msg_info "Installing flatpak apps from '${profile}/flatpak/' in '${pacstrap_dir}' chroot..."
+        install -d -m 0755 -o 0 -g 0 -- "${pacstrap_dir}/tmp/flatpak"
+        cp -r "${profile}/flatpak/"* "${pacstrap_dir}/tmp/flatpak/"
+
+        arch-chroot "${pacstrap_dir}" /bin/bash -c '
+            for bundle in /tmp/flatpak/*.flatpak; do
+                if [ -f "$bundle" ]; then
+                    flatpak install --system --assumeyes --noninteractive "$bundle"
+                fi
+            done
+
+            if [ -f /tmp/flatpak/repos.txt ]; then
+                while read -r repo_url; do
+                    flatpak remote-add --system --no-gpg-verify bakery-iso-repo "$repo_url"
+                done < /tmp/flatpak/repos.txt
+            fi
+        '
+        rm -rf -- "${pacstrap_dir}/tmp/flatpak"
+    fi
+
     if [[ -d "${profile}/hooks" ]]; then
         _msg_info "Running hooks from '${profile}/hooks/' in '${pacstrap_dir}' chroot..."
         install -d -m 0755 -o 0 -g 0 -- "${pacstrap_dir}/tmp/hooks"
